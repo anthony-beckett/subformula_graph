@@ -1,13 +1,10 @@
 import netCDF4 as nc
-import os 
+import os
 import sys
 import formula as mf
 import numpy as np
 import itertools
 from typing import List
-
-f = os.path.dirname(sys.argv[0]) + r'\WF12011.cdf'
-data = nc.Dataset(f)
 
 def print_variables(data):
     for var in data.variables.values():
@@ -41,7 +38,7 @@ def cluster(l:List[float])->List[List[float]]: #cluster together contiguous scan
 
 #split a list into parts dictated by the elements of the parts array
 # split_lst([1,2,3,4,5,6,7,8], [3,5]) -> [[1, 2, 3], [4, 5, 6, 7, 8]]
-def split_lst(lst:List[float],parts:List[int])->List[List[float]]: 
+def split_lst(lst:List[float],parts:List[int])->List[List[float]]:
     res = []
     i,j = 0,0
     while j < len(parts):
@@ -80,18 +77,18 @@ def make_intensity_matrix(separated_data:List[tuple],lower_bound=45,upper_bound=
         for j in range(len(separated_data[i][0])):
             ind = round(separated_data[i][0][j]) - lower_bound
             res[ind,i] += separated_data[i][1][j]
-    return res  
+    return res
 
 
 #returns mass spectrum for a given scan number, rudimentary de-noising
-def mass_spectra(scan_no:int, data, intensity_cutoff=0, base_norm=False)->List[tuple]: 
+def mass_spectra(scan_no:int, data, intensity_cutoff=0, base_norm=False)->List[tuple]:
     mat = make_intensity_matrix(separate_ms(data))
     norm = ion_current(data)[scan_no-1]
     p = (sum(data['point_count'][:scan_no-1]), sum(data['point_count'][:scan_no]))
     mass = data['mass_values'][p[0]:p[1]]
     raw_intensity = data['intensity_values'][p[0]:p[1]]
     normed_intensity = [i*100/norm for i in raw_intensity]
-    
+
     res = []
     for i in range(len(mass)):
         bin = int(round(mass[i],0)) - 45
