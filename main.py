@@ -8,9 +8,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # Local
-from lib import formula as mf
-import frag_tree as ft
-import netcdf
+from libs import formula as mf
+from libs import frag_tree as ft
+from libs import netcdf
 
 
 def file_loop():
