@@ -27,7 +27,6 @@ def file_loop():
             print("File not found! Make sure you have included the file extension in the name and the data file is in this folder! \n")
 
 
-
 def plot_chromatogram(data):
     y = netcdf.ion_current(data)
     t = [netcdf.times(data)[i]/60 for i in range(len(netcdf.ion_current(data)))]
@@ -129,47 +128,52 @@ def formula_loop(graphs, spec):
             if answer == "y" or answer == "Y" or answer == "yes" or answer == "YES":
                 return num -1
 
-
-
         except ValueError or IndexError:
             print("Invalid input! Please enter a number between 1 and {}".format(len(graphs)))
 
 ############################# main loop #############################
 
-print("""Welcome to the mass spectrometry visualisation and formula annotation program!
-This program will walk you through your MS spectral analysis. \n""")\
+def main():
+    print("""Welcome to the mass spectrometry visualisation and formula annotation program!
+    This program will walk you through your MS spectral analysis. \n""")\
 
-data = file_loop()
+    data = file_loop()
+    ans = str() # initialise ans var
 
-print("Data successfully read!")
-while True:
-    print("Visualising chromatogram...")
+    print("Data successfully read!")
 
-    plot_chromatogram(data)
+    while ans != 'n':
+        ans = "" # reset ans var
+        print("Visualising chromatogram...")
 
-    n = MS_loop(len(netcdf.ion_current(data)))
-    print("You have chosen to analyse scan no {}".format(n))
-    print("Retrieving spectrum...")
-    m = netcdf.mass_spectra(n, data, intensity_cutoff=0.5,base_norm=True)
-    print("Computing formulae...")
-    g = ft.analyse_MS(ft.extract_mass(m))
+        plot_chromatogram(data)
 
-    print("Formula computation complete!")
-    num  = formula_loop(g, ft.extract_mass(m))
+        n = MS_loop(len(netcdf.ion_current(data)))
+        print("You have chosen to analyse scan no {}".format(n))
+        print("Retrieving spectrum...")
+        m = netcdf.mass_spectra(n, data, intensity_cutoff=0.5,base_norm=True)
+        print("Computing formulae...")
+        g = ft.analyse_MS(ft.extract_mass(m))
 
-    ans = input("Do you want to see the subformula graph of this annotation? (y/n): ")
-    if ans == "y" or ans == "Y" or ans == "yes" or ans == "YES":
-        ft.draw_graph(g[num][0])
+        print("Formula computation complete!")
+        num  = formula_loop(g, ft.extract_mass(m))
 
-    print("Displaying annotated mass spectrum...")
-    plot_annotated_mass_spectrum(m,g[num])
-    print("Analysis complete!")
-    ans = input("Do you want to do another analysis? (y/n): ")
-    if ans == "y" or ans == "Y" or ans == "yes" or ans == "YES":
-        pass
-    else:
-        break
+        ans = input("Do you want to see the subformula graph of this annotation? (y/n): ")
+        if ans == "y" or ans == "Y" or ans == "yes" or ans == "YES":
+            ft.draw_graph(g[num][0])
+
+        print("Displaying annotated mass spectrum...")
+        plot_annotated_mass_spectrum(m,g[num])
+        print("Analysis complete!")
+        while ans not in ('y', 'n'):
+            ans = input("Do you want to do another analysis? (y/n): ")
+            try:
+                if not isinstance(ans, str):
+                    raise Exception
+                ans = ans.str()
+            except Exception: # TODO Why does this run on strings?
+                print("Answer must be a string", file=sys.stderr)
 
 
-
-
+if __name__ == "__main__":
+    main()
