@@ -1,10 +1,11 @@
 import netCDF4 as nc
 import os
 import sys
-import formula as mf
-import numpy as np
 import itertools
+import numpy as np
 from typing import List
+
+from libs import formula as mf
 
 def print_variables(data):
     for var in data.variables.values():

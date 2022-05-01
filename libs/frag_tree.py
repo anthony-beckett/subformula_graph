@@ -3,9 +3,11 @@ import numpy as np
 import math 
 import matplotlib.pyplot as plt 
 import networkx as nx
-import netcdf as nc
-import formula as mf 
-from typing import List 
+
+from typing import List
+
+from libs import netcdf as nc
+from libs import formula as mf
 
 Vector = List[float]
 
